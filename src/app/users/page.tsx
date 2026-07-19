@@ -1,0 +1,9 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { AppShell } from '@/components/app-shell'
+import { AuthGuard } from '@/components/auth-guard'
+import { supabase } from '@/lib/supabase'
+
+type Profile={id:string;full_name:string;email:string;role:string;is_active:boolean}
+const roles=[['admin','مدير'],['supervisor','مشرفة'],['agent','عاملة تأكيد'],['shipping','مسؤول شحن'],['store_owner','صاحب متجر'],['accountant','محاسب']]
+export default function Users(){const [items,setItems]=useState<Profile[]>([]);async function load(){const {data}=await supabase.from('profiles').select('*').order('created_at');setItems((data||[]) as Profile[])}useEffect(()=>{load()},[]);return <AuthGuard><AppShell><header className="mb-7"><p className="text-violet-600 font-bold">إدارة الفريق</p><h1 className="text-3xl font-extrabold">المستخدمون</h1><p className="text-slate-500 mt-1">تحديد الأدوار والصلاحيات وحالة الحساب</p></header><section className="card overflow-auto"><table className="w-full min-w-[760px]"><thead className="bg-slate-50 text-slate-500"><tr>{['الاسم','البريد','الدور','الحالة'].map(x=><th key={x} className="text-right p-4">{x}</th>)}</tr></thead><tbody>{items.map(p=><tr key={p.id} className="border-t border-slate-100"><td className="p-4 font-bold">{p.full_name||'—'}</td><td className="p-4">{p.email}</td><td className="p-4"><select value={p.role} onChange={async e=>{await supabase.from('profiles').update({role:e.target.value}).eq('id',p.id);load()}} className="bg-violet-50 rounded-xl px-3 py-2">{roles.map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></td><td className="p-4"><button onClick={async()=>{await supabase.from('profiles').update({is_active:!p.is_active}).eq('id',p.id);load()}} className={`rounded-full px-3 py-1 font-bold text-sm ${p.is_active?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700'}`}>{p.is_active?'نشط':'موقوف'}</button></td></tr>)}</tbody></table></section></AppShell></AuthGuard>}

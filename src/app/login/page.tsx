@@ -1,0 +1,18 @@
+'use client'
+import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { LockKeyhole, Mail, Sparkles } from 'lucide-react'
+
+export default function LoginPage(){
+ const router=useRouter(); const [signup,setSignup]=useState(false); const [loading,setLoading]=useState(false); const [msg,setMsg]=useState('')
+ async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setLoading(true);setMsg('');const fd=new FormData(e.currentTarget);const email=String(fd.get('email'));const password=String(fd.get('password'));const full_name=String(fd.get('full_name')||'');
+  const res=signup?await supabase.auth.signUp({email,password,options:{data:{full_name}}}):await supabase.auth.signInWithPassword({email,password});setLoading(false);if(res.error){setMsg(res.error.message);return}if(signup){setMsg('تم إنشاء الحساب. تحقق من بريدك الإلكتروني ثم سجل الدخول.');setSignup(false)}else router.replace('/dashboard')
+ }
+ return <main className="min-h-screen grid lg:grid-cols-2">
+  <section className="hidden lg:flex brand-gradient text-white p-14 flex-col justify-between"><div className="flex items-center gap-3"><div className="w-14 h-14 rounded-2xl bg-white/15 grid place-items-center font-extrabold text-xl">NG</div><div><b className="text-2xl">New Gen Orders</b><p className="text-white/70">إدارة ذكية للطلبات والفرق</p></div></div><div><span className="inline-flex gap-2 bg-white/10 rounded-full px-4 py-2 mb-5"><Sparkles size={18}/>منصة SaaS احترافية</span><h1 className="text-5xl leading-[1.25] font-extrabold max-w-xl">كل عمليات التأكيد والشحن في لوحة واحدة.</h1><p className="text-white/75 text-lg mt-5 max-w-lg">تابع الطلبات، أداء العاملات، المكالمات المجدولة، ونسب التسليم لحظة بلحظة.</p></div><p className="text-white/55">New Gen Digital Solutions</p></section>
+  <section className="grid place-items-center p-6"><div className="glass rounded-[30px] p-8 w-full max-w-md"><div className="lg:hidden w-16 h-16 brand-gradient rounded-2xl text-white grid place-items-center font-extrabold mb-5">NG</div><h2 className="text-3xl font-extrabold">{signup?'إنشاء حساب':'مرحبًا بعودتك'}</h2><p className="text-slate-500 mt-2">{signup?'أنشئ حسابًا جديدًا للانضمام':'سجّل الدخول إلى لوحة التحكم'}</p>
+   <form onSubmit={submit} className="grid gap-4 mt-7">{signup&&<label className="grid gap-2 font-semibold">الاسم الكامل<input name="full_name" required className="border border-slate-200 rounded-2xl px-4 py-3 outline-none focus:ring-4 focus:ring-violet-100"/></label>}<label className="grid gap-2 font-semibold">البريد الإلكتروني<div className="relative"><Mail className="absolute right-4 top-3.5 text-slate-400" size={19}/><input name="email" type="email" required className="w-full border border-slate-200 rounded-2xl pr-12 pl-4 py-3 outline-none focus:ring-4 focus:ring-violet-100"/></div></label><label className="grid gap-2 font-semibold">كلمة المرور<div className="relative"><LockKeyhole className="absolute right-4 top-3.5 text-slate-400" size={19}/><input name="password" type="password" minLength={6} required className="w-full border border-slate-200 rounded-2xl pr-12 pl-4 py-3 outline-none focus:ring-4 focus:ring-violet-100"/></div></label>{msg&&<p className="text-sm rounded-xl bg-violet-50 text-violet-700 px-4 py-3">{msg}</p>}<button disabled={loading} className="brand-gradient text-white rounded-2xl py-3.5 font-extrabold shadow-lg shadow-violet-200 disabled:opacity-60">{loading?'جاري التنفيذ...':signup?'إنشاء الحساب':'تسجيل الدخول'}</button></form>
+   <button onClick={()=>setSignup(!signup)} className="w-full text-violet-700 font-bold mt-5">{signup?'لديك حساب؟ تسجيل الدخول':'ليس لديك حساب؟ إنشاء حساب'}</button></div></section>
+ </main>
+}

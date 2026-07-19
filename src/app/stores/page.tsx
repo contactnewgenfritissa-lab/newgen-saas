@@ -1,0 +1,2 @@
+import ModulePage from '@/components/module-page';
+export default function Page(){return <ModulePage title="المتاجر" subtitle="إدارة المتاجر والمالكين والفرق"><div className="content-grid"><article className="glass-panel"><h2>الوحدة جاهزة للربط</h2><p>تم تجهيز المسار والصلاحيات وقاعدة البيانات. ستظهر البيانات من Supabase بعد إضافة متغيرات البيئة وتسجيل الدخول.</p></article><article className="glass-panel"><h2>المرحلة التالية</h2><p>إضافة النماذج والفلاتر والجداول التنفيذية حسب سير عمل شركتك.</p></article></div></ModulePage>}
